@@ -17,6 +17,7 @@ const textStyle = {
 
 const StarRating = ({ maxRating = 5 }) => {
   const [rating, setRating] = useState(0);
+  const [tempRating, setTempRating] = useState(0); // this is the rating that is displayed when you hover over the stars
 
   function handleRating(rating) {
     setRating(rating);
@@ -29,11 +30,13 @@ const StarRating = ({ maxRating = 5 }) => {
           <Star
             key={i}
             onRate={() => handleRating(i + 1)} // what this does is it calls the handleRating function with the value of i + 1 because i starts at 0
-            full={rating >= i + 1} // this is a boolean that checks if the rating is greater than or equal to i + 1
+            full={tempRating ? tempRating >= i + 1 : rating >= i + 1} // this is a boolean that checks if the rating is greater than or equal to i + 1
+            onHoverIn={() => setTempRating(i + 1)} // this sets the tempRating to i + 1 when you hover over the stars
+            onHoverout={() => setTempRating(0)} // this sets the tempRating to 0 when you hover out of the stars
           />
         ))}
       </div>
-      <p style={textStyle}>{rating || ""}</p>
+      <p style={textStyle}>{tempRating || rating || ""}</p>
       {/* if rating is truthy, it will display the rating, if not, it will display an empty string */}
     </div>
   );
@@ -46,9 +49,15 @@ const starStyle = {
   cursor: "pointer",
 };
 
-function Star({ onRate, full }) {
+function Star({ onRate, full, onHoverIn, onHoverOut }) {
   return (
-    <span role="button" style={starStyle} onClick={onRate}>
+    <span
+      role="button"
+      style={starStyle}
+      onClick={onRate}
+      onMouseEnter={onHoverIn}
+      onMouseLeave={onHoverOut}
+    >
       {full ? (
         <svg
           xmlns="http://www.w3.org/2000/svg"
