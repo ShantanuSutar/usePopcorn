@@ -1,5 +1,7 @@
 import React from "react";
 import { useState } from "react";
+import PropTypes from "prop-types";
+
 const containerStyle = {
   display: "flex",
   alignItems: "center",
@@ -104,5 +106,15 @@ function Star({ onRate, full, onHoverIn, onHoverOut, color, size }) {
     </span>
   );
 }
+
+StarRating.propTypes = {
+  maxRating: PropTypes.number,
+  color: PropTypes.string,
+  size: PropTypes.number,
+  className: PropTypes.string,
+  messages: PropTypes.arrayOf(PropTypes.string),
+  defaultRating: PropTypes.number,
+  onSetRating: PropTypes.func,
+}; // this is the prop types for the StarRating component
 
 export default StarRating;
