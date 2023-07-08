@@ -131,7 +131,7 @@ export default function App() {
 
     return function () {
       controller.abort();
-    };
+    }; // abort the fetch request when the component unmounts or when the query changes before the fetch request is completed (when the user types too fast) to prevent memory leaks
   }, [query]);
 
   return (
@@ -330,6 +330,19 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
     onAddWatched(newWatchedMovie);
     onCloseMovie(); // close the movie details when the add button is clicked
   } // function to add the movie to the watched list when the add button is clicked
+
+  useEffect(() => {
+    function callback(e) {
+      if (e.code === "Escape") {
+        onCloseMovie();
+      }
+    } // function to close the movie details when the escape key is pressed on the keyboard (only when the movie details are open)
+    document.addEventListener("keydown", callback); // add the event listener to the document
+
+    return function () {
+      document.removeEventListener("keydown", callback);
+    }; // remove the event listener from the document when the movie details are closed
+  }, [onCloseMovie]);
 
   useEffect(() => {
     const fetchMovie = async () => {
