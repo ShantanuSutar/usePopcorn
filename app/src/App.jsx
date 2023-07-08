@@ -53,15 +53,31 @@ const average = (arr) =>
 const KEY = "82e8dca2";
 
 export default function App() {
+  const [query, setQuery] = useState("inception"); // query state
   const [movies, setMovies] = useState(tempMovieData);
   const [watched, setWatched] = useState(tempWatchedData);
   const [error, setError] = useState(null); // error message
   const [loading, setLoading] = useState(false); // loading state
-  const query = "dhoom";
+
+  // useEffect(() => {
+  //   console.log("After initial render");
+  // }, []); // this will be called only once after the initial render
+
+  // useEffect(() => {
+  //   console.log("After every render");
+  // });  // this will be called every time the component renders
+
+  // useEffect(() => {
+  //   console.log("D");
+  // }, [query]); // this will be called only when the query changes
+
+  // console.log("During render"); // this will be called every time the component renders
+
   useEffect(() => {
     const fetchMovies = async () => {
       try {
         setLoading(true);
+        setError(null); // set loading to true and error to null before fetching the movies
         const res = await fetch(
           `https://www.omdbapi.com/?apikey=${KEY}&s=${query}`
         ); // fetch movies from API using the query
@@ -81,14 +97,21 @@ export default function App() {
         setLoading(false); // set loading to false
       }
     };
+
+    if (!query) {
+      setMovies([]);
+      setError(null);
+      return;
+    } // if query is empty, set movies to empty array and error to null and return
+
     fetchMovies();
-  }, []);
+  }, [query]);
 
   return (
     <>
       <Navbar>
         <Logo />
-        <Search />
+        <Search query={query} setQuery={setQuery} />
         <NumResults movies={movies} />
       </Navbar>
       <Main>
@@ -155,8 +178,7 @@ function Logo() {
   );
 }
 
-function Search() {
-  const [query, setQuery] = useState("");
+function Search({ query, setQuery }) {
   return (
     <input
       className="search"
