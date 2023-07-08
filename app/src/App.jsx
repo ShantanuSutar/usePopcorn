@@ -337,6 +337,10 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
     fetchMovie();
   }, [selectedId]); // fetch the movie details when the selectedId changes
 
+  useEffect(() => {
+    document.title = `Movie | ${Title}`; // change the document title to the movie title when the movie details are fetched
+  }, [Title]);
+
   return (
     <div className="details">
       {loading ? (
