@@ -55,17 +55,31 @@ const KEY = "82e8dca2";
 export default function App() {
   const [movies, setMovies] = useState(tempMovieData);
   const [watched, setWatched] = useState(tempWatchedData);
-  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null); // error message
+  const [loading, setLoading] = useState(false); // loading state
   const query = "dhoom";
   useEffect(() => {
     const fetchMovies = async () => {
-      setLoading(true);
-      const res = await fetch(
-        `https://www.omdbapi.com/?apikey=${KEY}&s=${query}`
-      );
-      const data = await res.json();
-      setMovies(data.Search);
-      setLoading(false);
+      try {
+        setLoading(true);
+        const res = await fetch(
+          `https://www.omdbapi.com/?apikey=${KEY}&s=${query}`
+        ); // fetch movies from API using the query
+
+        if (!res.ok) {
+          throw new Error("Something went wrong");
+        } // if the response is not ok, throw an error
+
+        const data = await res.json();
+        if (data.Response === "False") {
+          throw new Error("Movie not found");
+        } // movie not found error
+        setMovies(data.Search);
+      } catch (err) {
+        setError(err.message); //catch the error and set the error message
+      } finally {
+        setLoading(false); // set loading to false
+      }
     };
     fetchMovies();
   }, []);
@@ -79,7 +93,15 @@ export default function App() {
       </Navbar>
       <Main>
         {/* <Box element={<MovieList movies={movies} />} /> */}
-        <Box>{loading ? <Loader /> : <MovieList movies={movies} />}</Box>
+        <Box>
+          {/* {loading ? <Loader /> : <MovieList movies={movies} />} */}
+          {loading && <Loader />}
+          {/* if loading is true, show the loader */}
+          {!loading && !error && <MovieList movies={movies} />}
+          {/* if loading is false and error is false, show the movie list */}
+          {error && <ErrorMessage error={error} />}
+          {/* if error is true, show the error message */}
+        </Box>
         {/* <Box
           element={
             <>
@@ -101,6 +123,15 @@ export default function App() {
 
 function Loader() {
   return <p className="loader">Loading...</p>;
+}
+
+function ErrorMessage({ error }) {
+  return (
+    <p className="error">
+      <span>💀 </span>
+      {error}
+    </p>
+  );
 }
 
 function Navbar({ children }) {
