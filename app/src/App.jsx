@@ -83,6 +83,10 @@ export default function App() {
     setSelectedId(null);
   } // set the selected movie id to null when the close button is clicked
 
+  function handleAddWatched(movie) {
+    setWatched((watched) => [...watched, movie]);
+  } // add the movie to the watched list
+
   useEffect(() => {
     const fetchMovies = async () => {
       try {
@@ -150,6 +154,7 @@ export default function App() {
             <MovieDetails
               selectedId={selectedId}
               onCloseMovie={handleCloseMovie}
+              onAddWatched={handleAddWatched}
             />
           ) : (
             <>
@@ -273,12 +278,13 @@ function Movie({ movie, onSelectMovie }) {
   );
 }
 
-function MovieDetails({ selectedId, onCloseMovie }) {
+function MovieDetails({ selectedId, onCloseMovie, onAddWatched }) {
   const [movie, setMovie] = useState({});
   const [loading, setLoading] = useState(false);
 
   const {
     Title,
+    Year,
     Poster,
     Runtime,
     Plot,
@@ -288,6 +294,19 @@ function MovieDetails({ selectedId, onCloseMovie }) {
     Genre,
     imdbRating,
   } = movie; // destructuring the movie object to get the properties we need to display
+
+  function handleAdd() {
+    const newWatchedMovie = {
+      imdbID: selectedId,
+      Title,
+      Year,
+      Poster,
+      imdbRating: Number(imdbRating),
+      Runtime,
+    };
+    onAddWatched(newWatchedMovie);
+    onCloseMovie(); // close the movie details when the add button is clicked
+  } // function to add the movie to the watched list when the add button is clicked
 
   useEffect(() => {
     const fetchMovie = async () => {
@@ -328,6 +347,9 @@ function MovieDetails({ selectedId, onCloseMovie }) {
           </header>
           <section>
             <StarRating maxRating={10} size={24} />
+            <button className="btn-add" onClick={handleAdd}>
+              + Add to list
+            </button>
             <p>
               <em>{Plot}</em>
             </p>
@@ -396,7 +418,7 @@ function WatchedMovie({ movie }) {
         </p>
         <p>
           <span>⏳</span>
-          <span>{movie.runtime} min</span>
+          <span>{movie.Runtime} min</span>
         </p>
       </div>
     </li>
