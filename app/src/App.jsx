@@ -32,7 +32,7 @@ const tempWatchedData = [
     Year: "2010",
     Poster:
       "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg",
-    runtime: 148,
+    Runtime: 148,
     imdbRating: 8.8,
     userRating: 10,
   },
@@ -42,14 +42,15 @@ const tempWatchedData = [
     Year: "1985",
     Poster:
       "https://m.media-amazon.com/images/M/MV5BZmU0M2Y1OGUtZjIxNi00ZjBkLTg1MjgtOWIyNThiZWIwYjRiXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_SX300.jpg",
-    runtime: 116,
+    Runtime: 116,
     imdbRating: 8.5,
     userRating: 9,
   },
 ];
 
 const average = (arr) =>
-  arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
+  Math.round(arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0) * 10) /
+  10;
 
 const KEY = "82e8dca2";
 
@@ -281,6 +282,7 @@ function Movie({ movie, onSelectMovie }) {
 function MovieDetails({ selectedId, onCloseMovie, onAddWatched }) {
   const [movie, setMovie] = useState({});
   const [loading, setLoading] = useState(false);
+  const [userRating, setUserRating] = useState("");
 
   const {
     Title,
@@ -302,7 +304,8 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched }) {
       Year,
       Poster,
       imdbRating: Number(imdbRating),
-      Runtime,
+      Runtime: Number(Runtime.split(" ")[0]),
+      userRating,
     };
     onAddWatched(newWatchedMovie);
     onCloseMovie(); // close the movie details when the add button is clicked
@@ -346,10 +349,12 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched }) {
             </div>
           </header>
           <section>
-            <StarRating maxRating={10} size={24} />
-            <button className="btn-add" onClick={handleAdd}>
-              + Add to list
-            </button>
+            <StarRating maxRating={10} size={24} onSetRating={setUserRating} />
+            {userRating > 0 && (
+              <button className="btn-add" onClick={handleAdd}>
+                + Add to list
+              </button>
+            )}
             <p>
               <em>{Plot}</em>
             </p>
@@ -365,7 +370,7 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched }) {
 function WatchedSummary({ watched }) {
   const avgImdbRating = average(watched.map((movie) => movie.imdbRating));
   const avgUserRating = average(watched.map((movie) => movie.userRating));
-  const avgRuntime = average(watched.map((movie) => movie.runtime));
+  const avgRuntime = average(watched.map((movie) => movie.Runtime));
 
   return (
     <div className="summary">
