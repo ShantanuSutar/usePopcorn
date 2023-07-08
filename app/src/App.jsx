@@ -339,6 +339,10 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
 
   useEffect(() => {
     document.title = `Movie | ${Title}`; // change the document title to the movie title when the movie details are fetched
+
+    return function () {
+      document.title = "usePopcorn"; // change the document title back to the default when the movie details are closed
+    };
   }, [Title]);
 
   return (
