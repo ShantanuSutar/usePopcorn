@@ -20,7 +20,7 @@ function Test() {
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <StarRating
+    {/* <StarRating
       maxRating={5}
       messages={["Terrible", "Bad", "Okay", "Good", "Amazing"]}
     />
@@ -33,8 +33,8 @@ root.render(
       defaultRating={3}
     />
 
-    <Test />
+    <Test /> */}
 
-    {/* <App /> */}
+    <App />
   </React.StrictMode>
 );
