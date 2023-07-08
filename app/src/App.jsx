@@ -93,12 +93,14 @@ export default function App() {
   }
 
   useEffect(() => {
+    const controller = new AbortController(); // create a new AbortController instance to abort the fetch request when the component unmounts or when the query changes before the fetch request is completed (when the user types too fast) to prevent memory leaks
     const fetchMovies = async () => {
       try {
         setLoading(true);
         setError(null); // set loading to true and error to null before fetching the movies
         const res = await fetch(
-          `https://www.omdbapi.com/?apikey=${KEY}&s=${query}`
+          `https://www.omdbapi.com/?apikey=${KEY}&s=${query}`,
+          { signal: controller.signal }
         ); // fetch movies from API using the query
 
         if (!res.ok) {
@@ -111,7 +113,9 @@ export default function App() {
         } // movie not found error
         setMovies(data.Search);
       } catch (err) {
-        setError(err.message); //catch the error and set the error message
+        if (err.name !== "AbortError") {
+          setError(err.message); //catch the error and set the error message
+        }
       } finally {
         setLoading(false); // set loading to false
       }
@@ -124,6 +128,10 @@ export default function App() {
     } // if query is empty, set movies to empty array and error to null and return
 
     fetchMovies();
+
+    return function () {
+      controller.abort();
+    };
   }, [query]);
 
   return (
