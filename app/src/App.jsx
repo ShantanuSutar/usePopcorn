@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import StarRating from "./StarRating";
 
 const tempMovieData = [
   {
@@ -273,12 +274,68 @@ function Movie({ movie, onSelectMovie }) {
 }
 
 function MovieDetails({ selectedId, onCloseMovie }) {
+  const [movie, setMovie] = useState({});
+  const [loading, setLoading] = useState(false);
+
+  const {
+    Title,
+    Poster,
+    Runtime,
+    Plot,
+    Released,
+    Actors,
+    Director,
+    Genre,
+    imdbRating,
+  } = movie; // destructuring the movie object to get the properties we need to display
+
+  useEffect(() => {
+    const fetchMovie = async () => {
+      setLoading(true);
+      const res = await fetch(
+        `https://www.omdbapi.com/?apikey=${KEY}&i=${selectedId}`
+      ); // fetch the movie details from the api using the selectedId
+      const data = await res.json();
+      setMovie(data);
+      setLoading(false);
+    };
+
+    fetchMovie();
+  }, [selectedId]); // fetch the movie details when the selectedId changes
+
   return (
     <div className="details">
-      <button className="btn-back" onClick={onCloseMovie}>
-        &larr;
-      </button>
-      {selectedId}
+      {loading ? (
+        <Loader />
+      ) : (
+        <>
+          <header>
+            <button className="btn-back" onClick={onCloseMovie}>
+              &larr;
+            </button>
+            <img src={Poster} alt={`Poster of the ${movie.Title}`} />
+            <div className="details-overview">
+              <h2>{Title}</h2>
+              <p>
+                {Released} &bull; {Runtime}
+              </p>
+              <p>{Genre}</p>
+              <p>
+                <span>⭐</span>
+                {imdbRating} IMDb Rating
+              </p>
+            </div>
+          </header>
+          <section>
+            <StarRating maxRating={10} size={24} />
+            <p>
+              <em>{Plot}</em>
+            </p>
+            <p>Starring: {Actors}</p>
+            <p>Directed by {Director}</p>
+          </section>
+        </>
+      )}
     </div>
   );
 }
