@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import StarRating from "./StarRating";
 import { useMovies } from "./useMovies";
 import { useLocalStorageState } from "./useLocalStorageState";
+import { useKey } from "./useKey";
 
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0); // calculate the average of the array
@@ -137,24 +138,12 @@ function Logo() {
 function Search({ query, setQuery }) {
   const inputEl = useRef(null);
 
-  useEffect(() => {
-    function callback(e) {
-      if (document.activeElement === inputEl.current) return; // if the input field has some movie name then do nothing
+  useKey("Enter", function () {
+    if (document.activeElement === inputEl.current) return; // if the input field has some movie name then do nothing
 
-      if (e.code === "Enter") {
-        inputEl.current.focus();
-        setQuery("");
-      }
-    } // if enter key is pressed put the input field on focus
-
-    document.addEventListener("keydown", callback);
-    return () => document.addEventListener("keydown", callback); //
-  }, [setQuery]); // focus on the search input when the component mounts (when the page loads)
-
-  // useEffect(() => {
-  //   const el = document.querySelector(".search");
-  //   el.focus();
-  // }, []);
+    inputEl.current.focus();
+    setQuery("");
+  });
 
   return (
     <input
@@ -276,18 +265,7 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
     onCloseMovie(); // close the movie details when the add button is clicked
   } // function to add the movie to the watched list when the add button is clicked
 
-  useEffect(() => {
-    function callback(e) {
-      if (e.code === "Escape") {
-        onCloseMovie();
-      }
-    } // function to close the movie details when the escape key is pressed on the keyboard (only when the movie details are open)
-    document.addEventListener("keydown", callback); // add the event listener to the document
-
-    return function () {
-      document.removeEventListener("keydown", callback);
-    }; // remove the event listener from the document when the movie details are closed
-  }, [onCloseMovie]);
+  useKey("Escape", onCloseMovie); // close the movie details when the escape key is pressed)
 
   useEffect(() => {
     const fetchMovie = async () => {
