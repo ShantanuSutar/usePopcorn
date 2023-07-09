@@ -11,7 +11,7 @@ export default function App() {
   const [query, setQuery] = useState(""); // query state
   const [selectedId, setSelectedId] = useState(null); // selected movie id
 
-  const { movies, loading, error } = useMovies(query); // custom hook to fetch movies
+  const { movies, loading, error } = useMovies(query, handleCloseMovie); // custom hook to fetch movies
 
   // const [watched, setWatched] = useState([]);
 

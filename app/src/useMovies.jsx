@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 
 const KEY = "82e8dca2";
-export function useMovies(query) {
+export function useMovies(query, callback) {
   const [movies, setMovies] = useState([]);
   const [error, setError] = useState(null); // error message
   const [loading, setLoading] = useState(false); // loading state
   useEffect(() => {
+    callback?.(); // if callback is passed, call it
+
     const controller = new AbortController(); // create a new AbortController instance to abort the fetch request when the component unmounts or when the query changes before the fetch request is completed (when the user types too fast) to prevent memory leaks
     const fetchMovies = async () => {
       try {
