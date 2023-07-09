@@ -286,6 +286,13 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
   const [movie, setMovie] = useState({});
   const [loading, setLoading] = useState(false);
   const [userRating, setUserRating] = useState("");
+
+  const countRef = useRef(0);
+
+  useEffect(() => {
+    if (userRating) countRef.current++;
+  }, [userRating]); // increment the countRef when the userRating changes
+
   const isWatched = watched.map((movie) => movie.imdbID).includes(selectedId); // check if the movie is already in the watched list
   const watchedUserRating = watched.find(
     (movie) => movie.imdbID === selectedId
@@ -313,6 +320,7 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
       imdbRating: Number(imdbRating),
       Runtime: Number(Runtime.split(" ")[0]),
       userRating,
+      countRatingDecisions: countRef.current, // to keep track of how many times the user has rated the movie
     };
     onAddWatched(newWatchedMovie);
     onCloseMovie(); // close the movie details when the add button is clicked
