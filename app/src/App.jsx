@@ -188,8 +188,18 @@ function Search({ query, setQuery }) {
   const inputEl = useRef(null);
 
   useEffect(() => {
-    inputEl.current.focus();
-  }, []); // focus on the search input when the component mounts (when the page loads)
+    function callback(e) {
+      if (document.activeElement === inputEl.current) return; // if the input field has some movie name then do nothing
+
+      if (e.code === "Enter") {
+        inputEl.current.focus();
+        setQuery("");
+      }
+    } // if enter key is pressed put the input field on focus
+
+    document.addEventListener("keydown", callback);
+    return () => document.addEventListener("keydown", callback); //
+  }, [setQuery]); // focus on the search input when the component mounts (when the page loads)
 
   // useEffect(() => {
   //   const el = document.querySelector(".search");
